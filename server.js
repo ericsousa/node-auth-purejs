@@ -3,16 +3,21 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const sessions = require('client-sessions')
 const bcrypt = require('bcryptjs')
+const helmet = require('helmet')
 
 let app = express()
 app.set('view engine', 'pug')
 
 // MIDDLEWARE
+app.user(helmet())    // manage http header security
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(sessions({
   cookieName: "session",
   secret: "asd09f8ori124hj0asd9j",
-  duration: 30 * 60 * 1000   // 30 min
+  duration: 30 * 60 * 1000,   // 30 min
+  httpOnly: true,   // don't let JS code access cookies
+  secure: true,     // only set cookies over https
+  ephemeral: true   // destroy cookies when the browser closes
 }))
 
 // middleware that check session with db user
@@ -105,7 +110,6 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   User.findOne({ email: req.body.email }, (err, user) => {
     
-    console.log(user)
     if (err || !user || !bcrypt.compareSync(req.body.password, user.password)) {
       return res.render('login', { error: 'Incorrect email / password.'})
     }
