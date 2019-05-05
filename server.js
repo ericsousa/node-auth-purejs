@@ -149,14 +149,3 @@ app.get('/dashboard', loginRequired, (req, res) => {
 app.listen(3000, () => {
   console.log('Server running!')
 })
-
-
-// 
-/*
-  MONGODB SEED
-
-  user auth_node
-  db.users.insert({ email: "ericsousa@gmail.com", password: "123"})
-  db.users.find()
-
-*/
